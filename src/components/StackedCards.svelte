@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fly } from "svelte/transition"
-	import type { CSSColor, CSSUnit } from "../typedefs"
-	import { clamp, debounce } from "../utils"
+	import type { CSSColor, CSSUnit } from "../utils/typedefs"
+	import { clamp, debounce } from "../utils/utils"
 
 	export let cards: { smallTitle?: string; title: string; todos: string[] }[]
 	export let cardColor: CSSColor = "#444"
