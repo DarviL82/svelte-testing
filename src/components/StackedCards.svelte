@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from "svelte"
+
 	import { fly } from "svelte/transition"
 	import type { CSSColor, CSSUnit } from "../utils/typedefs"
 	import { clamp, debounce } from "../utils/utils"
@@ -6,11 +8,17 @@
 	export let cards: { smallTitle?: string; title: string; todos: string[] }[]
 	export let cardColor: CSSColor = "#444"
 	export let overlayColor: CSSColor = "black"
+
+	/** Wether the cards should be positioned vertically or horizontally.
+	 * Allowed values are `true`, `false` and `"auto"`.
+	 * Auto will set them based on the current width of the viewport */
+	export let vertical: boolean | "auto" = "auto"
+
 	export let size: {
 		width?: CSSUnit
 		height?: CSSUnit
-		expandedWidth?: CSSUnit
-		collapsedWidth?: CSSUnit
+		expandedSize?: CSSUnit
+		collapsedSize?: CSSUnit
 	} = {}
 
 	/** Minimun brightness of the cards from 0 to 1 */
@@ -29,7 +37,7 @@
 
 	/** When a card is collapsed, don't show the smallTitle */
 	export let dontShowSmallTitleWhenCollapsed: boolean = false
-	
+
 	/** Scroll over the cards with the mouse wheel */
 	export let scrollCardsOnWheel = false
 
@@ -79,16 +87,33 @@
 			})
 		}
 	}
+
+	onMount(() => {
+		// set default values
+		size = {
+			width: "100%",
+			height: "100%",
+			expandedSize: "15rem",
+			collapsedSize: "5rem",
+			...size,
+		}
+	})
+
+	let windowWidth: number = 0
 </script>
+
+<svelte:window bind:innerWidth={windowWidth} />
 
 <div
 	class="stacked-cards"
+	class:vertical={(vertical === "auto" && windowWidth < 768) ||
+		vertical === true}
 	bind:this={container}
 	on:wheel={handleCardScroll}
 	style:width={size.width || null}
 	style:height={size.height || null}
-	style:--expanded-size={size.expandedWidth || null}
-	style:--collapsed-size={size.collapsedWidth || null}
+	style:--expanded-size={size.expandedSize || null}
+	style:--collapsed-size={size.collapsedSize || null}
 	style:--bg-color={cardColor}
 	style:--overlay-color={overlayColor}
 >
@@ -130,7 +155,6 @@
 		display: flex;
 		background-color: #111;
 		overflow: hidden;
-		min-height: var(--card-height, 5rem);
 		border-radius: $border-radius;
 		box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.2);
 		width: 100%;
@@ -145,7 +169,7 @@
 			width: 0;
 			flex-grow: 1;
 			isolation: isolate;
-			transition: background-color 0.15s, width 0.5s;
+			transition: all 0.5s, background-color 0.15s;
 
 			// left padding under the previous card
 			&::before {
@@ -169,7 +193,7 @@
 				opacity: var(--opacity, 0);
 				z-index: -1;
 				border-radius: 0 $border-radius $border-radius 0;
-				transition: 0.15s;
+				transition: 0.25s;
 			}
 
 			.small-title {
@@ -185,11 +209,15 @@
 				flex-direction: column;
 				gap: 1.5rem;
 				padding: 3.5rem;
+
+				.title {
+					font-size: 2.75rem;
+				}
 			}
 
 			&.active {
-				width: var(--expanded-size, 15rem);
-				transition: 0.15s;
+				width: var(--expanded-size);
+				transition: 0.25s;
 
 				.small-title {
 					--scale: 4;
@@ -199,7 +227,49 @@
 			}
 
 			&:not(.active) {
-				min-width: var(--collapsed-size, 5rem);
+				min-width: var(--collapsed-size);
+			}
+		}
+
+		&.vertical {
+			height: 0;
+			flex-direction: column;
+
+			.card {
+				width: 100%;
+				border-radius: 0 0 $border-radius $border-radius;
+				transition: all 0.75s, width 0s;
+
+				&::before,
+				&::after {
+					top: -$border-radius;
+					inset-inline: 0;
+				}
+
+				&::after {
+					border-radius: 0 0 $border-radius $border-radius;
+				}
+
+				&::before {
+					width: auto;
+					height: $border-radius;
+				}
+
+				&.active {
+					transition: all 0.25s, width 0s;
+					height: var(--expanded-size);
+				}
+
+				&:not(.active) {
+					height: var(--collapsed-size);
+				}
+			}
+		}
+
+		@media (prefers-reduced-motion) {
+			&,
+			& * {
+				transition: none !important;
 			}
 		}
 	}

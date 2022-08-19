@@ -32,7 +32,8 @@
 			},
 		]}
 		cardColor="#25252e"
-		size={{ height: "20rem" }}
+		scrollCardsOnWheel
+		size={{ height: "40rem" }}
 	/>
 </div>
 
