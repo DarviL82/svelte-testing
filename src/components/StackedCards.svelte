@@ -31,7 +31,7 @@
 	export let dontShowSmallTitleWhenCollapsed: boolean = false
 	
 	/** Scroll over the cards with the mouse wheel */
-	export let scrollCardsOnWheel = false;
+	export let scrollCardsOnWheel = false
 
 	let hoveredCardIndex: number = 0
 	let container: HTMLDivElement
@@ -51,8 +51,8 @@
 	}, 1000)
 
 	function handleCardScroll(event: WheelEvent) {
-		if (!scrollCardsOnWheel) return;
-		event.preventDefault();
+		if (!scrollCardsOnWheel) return
+		event.preventDefault()
 		setCardIndex(hoveredCardIndex - Math.sign(event.deltaY))
 		isHoverDisabled = true
 		enableHover() // Enables hover again after 1 second of no scrolling
