@@ -2,6 +2,10 @@
 	import StackedCards from "./components/StackedCards.svelte"
 </script>
 
+<svelte:head>
+	<title>Stacked Cards</title>
+</svelte:head>
+
 <div class="card-container">
 	<StackedCards
 		cards={[
