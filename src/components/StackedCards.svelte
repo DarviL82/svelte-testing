@@ -48,6 +48,7 @@
 	}, 1000)
 
 	function handleCardScroll(event: WheelEvent) {
+		event.preventDefault();
 		setCardIndex(hoveredCardIndex - Math.sign(event.deltaY))
 		isHoverDisabled = true
 		enableHover() // Enables hover again after 1 second of no scrolling
@@ -93,7 +94,7 @@
 			on:mouseover={() => handleCardHover(i)}
 			on:focus={() => handleCardHover(i)}
 			class:active={i === hoveredCardIndex}
-			style:--z-index={cards.length - i}
+			style:z-index={cards.length - i}
 		>
 			{#if !dontShowSmallTitleWhenCollapsed || i === hoveredCardIndex}
 				<h1 class="small-title">{card.smallTitle ?? card.title}</h1>
@@ -136,7 +137,6 @@
 			flex-direction: column;
 			justify-content: start;
 			background-color: var(--bg-color, #111);
-			z-index: var(--z-index, 0);
 			border-radius: 0 $border-radius $border-radius 0;
 			width: 0;
 			flex-grow: 1;
